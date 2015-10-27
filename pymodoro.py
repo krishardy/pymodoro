@@ -28,6 +28,8 @@ class KeyboardCheckThread(threading.Thread):
 
         while self.exit_signal.isSet() is False:
             key = sys.stdin.read(1)
+            if key in ['q','Q']:
+                self.exit_signal.set()
             self.event_queue.put(key)
 
         termios.tcsetattr(fd, termios.TCSAFLUSH, old)
@@ -79,8 +81,11 @@ class Timer(object):
                     self.state = "Paused"
                     self.send_notification()
 
-                if key in ['+']:
+                elif key in ['+']:
                     self.add_1_minute()
+                elif key in ['n','N']:
+                    # Jump to next phase
+                    self.end_timestamp = datetime.datetime.now()
 
                 remaining_seconds = self.calculate_remaining_seconds()
                 if remaining_seconds <= 0:
@@ -109,7 +114,7 @@ class Timer(object):
         self.exit_signal.set()
 
     def update_display(self):
-        help = "[P]ause [+]1Minute [Q]uit"
+        help = "[P]ause [+]1Minute [N]ext [Q]uit"
         sys.stdout.write("{0:15} | {1:2}:{2:02}    {3}\r".format(self.state, self.countdown["mins"], self.countdown["seconds"], help))
         sys.stdout.flush()
 
