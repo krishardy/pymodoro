@@ -83,6 +83,8 @@ class Timer(object):
 
                 elif key in ['+']:
                     self.add_1_minute()
+                elif key in ['-']:
+                    self.subtract_1_minute()
                 elif key in ['n','N']:
                     # Jump to next phase
                     self.end_timestamp = datetime.datetime.now()
@@ -114,7 +116,7 @@ class Timer(object):
         self.exit_signal.set()
 
     def update_display(self):
-        help = "[P]ause [+]1Minute [N]ext [Q]uit"
+        help = "[P]ause [+]1Minute [-]1Minute [N]ext [Q]uit"
         sys.stdout.write("{0:15} | {1:2}:{2:02}    {3}\r".format(self.state, self.countdown["mins"], self.countdown["seconds"], help))
         sys.stdout.flush()
 
@@ -154,6 +156,9 @@ class Timer(object):
     def add_1_minute(self):
         self.end_timestamp += datetime.timedelta(minutes=1)
 
+    def subtract_1_minute(self):
+        self.end_timestamp -= datetime.timedelta(minutes=1)
+
 
 def main():
     parser = argparse.ArgumentParser("pymodoro.py")
@@ -181,6 +186,7 @@ def main():
 
     timer.start()
     keyboard_thread.join()
+    print("")
 
 if __name__ == "__main__":
     sys.exit(main())
